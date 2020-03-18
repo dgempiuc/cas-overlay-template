@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://www.springframework.org/schema/webflow"
+      xsi:schemaLocation="http://www.springframework.org/schema/webflow
+                          http://www.springframework.org/schema/webflow/spring-webflow.xsd">
+
+    <var name="register" class="RegisterModel" />
+
+    <on-start>
+        <evaluate expression="initialFlowSetupAction"/>
+    </on-start>
+
+    <!-- custom -->
+
+    <view-state id="username" view="register-username" model="register">
+        <transition on="password" to="validateUsername" />
+    </view-state>
+
+    <action-state id="validateUsername">
+        <evaluate expression="myHandler.validateUsername(register, messageContext)" />
+        <transition on="success" to="password" />
+        <transition on="failure" to="username" />
+    </action-state>
+
+    <view-state id="password" view="register-password" model="register">
+        <transition on="ready" to="validatePassword" />
+    </view-state>
+
+    <action-state id="validatePassword">
+        <evaluate expression="myHandler.validatePassword(register, messageContext)" />
+        <transition on="success" to="viewLoginForm" />
+        <transition on="failure" to="password" />
+    </action-state>
+
+    <!-- custom -->
+
+    <action-state id="initialAuthenticationRequestValidationCheck">
+        <evaluate expression="initialAuthenticationRequestValidationAction"/>
+        <transition on="authenticationFailure" to="handleAuthenticationFailure"/>
+        <transition on="error" to="initializeLoginForm"/>
+        <transition on="success" to="ticketGrantingTicketCheck"/>
+        <transition on="successWithWarnings" to="ticketGrantingTicketCheck"/>
+    </action-state>
+
+    <action-state id="ticketGrantingTicketCheck">
+        <evaluate expression="ticketGrantingTicketCheckAction"/>
+        <transition on="notExists" to="gatewayRequestCheck"/>
+        <transition on="invalid" to="terminateSession"/>
+        <transition on="valid" to="hasServiceCheck"/>
+    </action-state>
+
+    <action-state id="initializeLoginForm">
+        <evaluate expression="initializeLoginAction" />
+        <transition on="success" to="initializeCaptcha"/>
+    </action-state>
+
+    <action-state id="initializeCaptcha">
+        <evaluate expression="initializeCaptchaAction" />
+        <transition on="success" to="viewLoginForm"/>
+    </action-state>
+
+    <view-state id="viewLoginForm" view="casLoginView" model="credential">
+        <binder>
+            <binding property="username" required="true"/>
+            <binding property="password" required="true"/>
+        </binder>
+        <transition on="register" to="username" />
+        <transition on="submit" bind="true" validate="true" to="loginAttemptCounter" history="invalidate"/>
+    </view-state>
+
+    <action-state id="loginAttemptCounter">
+        <evaluate expression="loginAttemptCounterAction"/>
+        <transition on="success" to="captchaControl"/>
+    </action-state>
+
+    <action-state id="captchaControl">
+        <evaluate expression="validateCaptchaAction"/>
+        <transition on="success" to="realSubmit"/>
+        <transition on="captchaError" to="initializeLoginForm"/>
+    </action-state>
+
+    <action-state id="realSubmit">
+        <evaluate expression="authenticationViaFormAction"/>
+        <transition on="warn" to="warn"/>
+        <transition on="success" to="sendTicketGrantingTicket"/>
+        <transition on="successWithWarnings" to="showAuthenticationWarningMessages"/>
+        <transition on="authenticationFailure" to="handleAuthenticationFailure"/>
+        <transition on="error" to="initializeLoginForm"/>
+    </action-state>
+
+    <view-state id="showAuthenticationWarningMessages" view="casLoginMessageView">
+        <on-entry>
+            <evaluate expression="sendTicketGrantingTicketAction"/>
+            <set name="requestScope.messages" value="messageContext.allMessages"/>
+        </on-entry>
+        <transition on="proceed" to="serviceCheck"/>
+    </view-state>
+
+    <action-state id="sendTicketGrantingTicket">
+        <evaluate expression="sendTicketGrantingTicketAction"/>
+        <transition on="success" to="serviceCheck"/>
+    </action-state>
+</flow>

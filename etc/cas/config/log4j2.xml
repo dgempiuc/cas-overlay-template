@@ -106,6 +106,27 @@
             <AppenderRef ref="casAudit"/>
         </AsyncLogger>
 
+        <!-- logout addded by google groups -->
+        <!-- DEBUG service status and logout process and a lot of details -->
+        <AsyncLogger name="org.apereo.cas.logout" level="debug" />
+        <!-- INFO  Performing logout operations for [TGT-...]
+                   [number] logout requests were processed
+             DEBUG ST, principal and URL -->
+        <AsyncLogger name="org.apereo.cas.logout.DefaultLogoutManager" level="debug">
+            <Filters>
+                <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="NEUTRAL" />
+                <RegexFilter regex="Captured logout request.*" onMismatch="DENY" />
+            </Filters>
+        </AsyncLogger>
+        <!-- DEBUG Logout request will be sent to but does not print anything when login was through SAML 1.1 -->
+        <AsyncLogger name="org.apereo.cas.logout.DefaultSingleLogoutServiceLogoutUrlBuilder" level="debug" />
+        <!-- DEBUG preparing, processing and logout with URL and ST -->
+        <AsyncLogger name="org.apereo.cas.logout.DefaultSingleLogoutServiceMessageHandler" level="debug" />
+        <!-- DEBUG SAML logout payload -->
+        <AsyncLogger name="org.apereo.cas.logout.SamlCompliantLogoutMessageCreator" level="debug" />
+
+        <!-- end of logout logs -->
+
         <!-- All Loggers inherit appenders specified here, unless additivity="false" on the Logger -->
         <AsyncRoot level="warn">
             <AppenderRef ref="casFile"/>

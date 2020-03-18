@@ -72,6 +72,29 @@ apply from: rootProject.file("gradle/dockerjib.gradle")
 dependencies {
     // Other CAS dependencies/modules may be listed here...
     // implementation "org.apereo.cas:cas-server-support-json-service-registry:${casServerVersion}"
+    // compile "org.apereo.cas:cas-server-support-oauth-webflow:${casServerVersion}"
+    compile "org.apereo.cas:cas-server-webapp:${casServerVersion}"
+    compile "org.apereo.cas:cas-server-core-authentication:${casServerVersion}"
+    compile "org.apereo.cas:cas-server-core-authentication-api:${casServerVersion}"
+    compile "org.apereo.cas:cas-server-core-configuration:${casServerVersion}"
+    compile "org.apereo.cas:cas-server-core-webflow:${casServerVersion}"
+    compile "org.apereo.cas:cas-server-core-util:${casServerVersion}"
+    compile "org.apereo.cas:cas-server-core-web:${casServerVersion}"
+    compile "org.apereo.cas:cas-server-core-api-webflow:${casServerVersion}"
+    compile 'org.springframework.security:spring-security-cas:5.0.0.M1'
+
+    compile 'javax.xml.bind:jaxb-api:2.3.0'
+    compile 'com.sun.xml.bind:jaxb-core:2.3.0'
+    compile 'com.sun.xml.bind:jaxb-impl:2.3.0'
+
+
+    compile "org.apereo.cas:cas-server-support-jdbc:${casServerVersion}"
+    compile "org.apereo.cas:cas-server-support-jdbc-drivers:${casServerVersion}"
+    compile 'io.springfox:springfox-swagger2:2.9.2'
+    compile 'io.springfox:springfox-swagger-ui:2.9.2'
+
+    compile "org.apereo.cas:cas-server-support-redis-ticket-registry:${casServerVersion}"
+//    compile "org.apereo.cas:cas-server-support-jpa-ticket-registry:${casServerVersion}"
 }
 
 tasks.findByName("jibDockerBuild")
